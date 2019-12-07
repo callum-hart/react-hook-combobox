@@ -29,13 +29,13 @@ const Example = () => {
         <>
           <p>Recently contacted:</p>
           <ul {...primitives.listbox}>
-            {givenOptions.map((contact, index) => (
+            {givenOptions.map((option, index) => (
               <li
                 {...primitives.listboxOption(index)}
-                key={contact.id}
+                key={option.id}
                 style={index === activeIndex ? { background: "#D8E2EB" } : {}}
               >
-                {contact.firstName}
+                {option.firstName}
               </li>
             ))}
           </ul>
