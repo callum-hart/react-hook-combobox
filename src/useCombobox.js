@@ -133,7 +133,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
       setTerm(displayName);
       onChange(displayName, index);
       setIsOpen(false);
-    } // else user pressed enter without a term present
+    }
   };
 
   return {
@@ -163,13 +163,22 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
           }),
         // only apply aria-labelledby if consumer has a label
         ...(labelRef.current && {
-          "aria-labelledby": labelId,
+          "aria-labelledby": labelId
         }),
         onFocus: () => setIsOpen(true),
+        onBlur: () => {
+          /**
+           * If the user does not choose a value from the listbox before
+           * moving focus outside the combobox, the value that the user
+           * typed, if any, becomes the value of the combobox.
+           */
+          if (activeIndex === DEFAULT_ACTIVE_INDEX) {
+            onChange(term);
+          }
+        },
         onChange: ({ target: { value } }) => {
           setTerm(value);
           setActiveIndex(DEFAULT_ACTIVE_INDEX);
-          setIsOpen(true);
         }
       },
       listbox: {
@@ -177,8 +186,9 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         id: listboxId,
         role: "listbox",
         ...(labelRef.current && {
-          "aria-labelledby": labelId,
+          "aria-labelledby": labelId
         }),
+        onMouseOut: () => setActiveIndex(DEFAULT_ACTIVE_INDEX)
       },
       listboxOption: index => {
         optionsCount++;
@@ -187,18 +197,21 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
           id: `${name}-option-${index}`,
           role: "option",
           "aria-selected": index === activeIndex,
-          onClick: () => selectOption(index)
+          onClick: () => selectOption(index),
+          onMouseOver: () => setActiveIndex(index)
         };
       }
     },
     term,
     activeIndex,
     isOpen,
+    handleOpen: () => setIsOpen(true),
     handleReset: () => {
       setTerm("");
       setActiveIndex(DEFAULT_ACTIVE_INDEX);
       onChange("");
     },
+    // is `handleSearch` needed since adding `onBlur`?
     handleSearch: () => {
       setTerm(term);
       setActiveIndex(DEFAULT_ACTIVE_INDEX);
