@@ -30,15 +30,6 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
 
   useEffect(() => {
     if (termHasFocus) {
-      document.addEventListener("keydown", handleDocumentKeydown);
-
-      return () =>
-        document.removeEventListener("keydown", handleDocumentKeydown);
-    }
-  });
-
-  useEffect(() => {
-    if (termHasFocus) {
       document.addEventListener("click", handleDocumentClick);
 
       return () => document.removeEventListener("click", handleDocumentClick);
@@ -81,7 +72,6 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
   const handleEnter = () => selectOption(activeIndex);
 
   const handleTab = () => {
-    inputRef.current.blur();
     setActiveIndex(DEFAULT_ACTIVE_INDEX);
     setIsOpen(false);
   };
@@ -92,16 +82,19 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
     setIsOpen(false);
   };
 
-  const handleDocumentKeydown = ({ key }) => {
-    if (!isOpen && (key === KEY_ARROW_DOWN || key === KEY_ARROW_UP)) {
-      // user pressed esc and maintained focus
+  const openIfClosed = () => {
+    if (!isOpen) {
       setIsOpen(true);
     }
+  }
 
+  const handleKeydown = ({ key }) => {
     switch (key) {
       case KEY_ARROW_DOWN:
+        openIfClosed();
         return handleArrowDown();
       case KEY_ARROW_UP:
+        openIfClosed();
         return handleArrowUp();
       case KEY_PAGE_DOWN:
         return handlePageDown();
@@ -120,19 +113,23 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
 
   const handleDocumentClick = ({ target }) => {
     if (isOpen && !containerRef.current.contains(target)) {
-      inputRef.current.blur();
       setActiveIndex(DEFAULT_ACTIVE_INDEX);
       setIsOpen(false);
     }
   };
 
   const selectOption = index => {
-    const displayName = optionToString(index);
+    try {
+      const displayName = optionToString(index);
 
-    if (displayName) {
-      setTerm(displayName);
-      onChange(displayName, index);
-      setIsOpen(false);
+      if (displayName) {
+        setTerm(displayName);
+        onChange(displayName, index);
+        setIsOpen(false);
+      }
+    } catch (error) {
+      // pressed enter without an active option
+      console.log(`Could not find option at index: ${index}`);
     }
   };
 
@@ -165,7 +162,6 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         ...(labelRef.current && {
           "aria-labelledby": labelId
         }),
-        onFocus: () => setIsOpen(true),
         onBlur: () => {
           /**
            * If the user does not choose a value from the listbox before
@@ -173,13 +169,18 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
            * typed, if any, becomes the value of the combobox.
            */
           if (activeIndex === DEFAULT_ACTIVE_INDEX) {
+            // TODO: pass flag to indicate to consumer that value does not
+            // exist in options... OR call a different function `onAdd`?
             onChange(term);
           }
         },
         onChange: ({ target: { value } }) => {
           setTerm(value);
           setActiveIndex(DEFAULT_ACTIVE_INDEX);
-        }
+
+          value ? setIsOpen(true) : setIsOpen(false);
+        },
+        onKeyDown: event => handleKeydown(event)
       },
       listbox: {
         ref: listboxRef,
@@ -205,19 +206,16 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
     term,
     activeIndex,
     isOpen,
-    handleOpen: () => setIsOpen(true),
+    handleOpen: () => {
+      setIsOpen(true);
+      inputRef.current.focus();
+    },
     handleReset: () => {
       setTerm("");
-      setActiveIndex(DEFAULT_ACTIVE_INDEX);
       onChange("");
-    },
-    // is `handleSearch` needed since adding `onBlur`?
-    handleSearch: () => {
-      setTerm(term);
-      setActiveIndex(DEFAULT_ACTIVE_INDEX);
-      onChange(term);
       setIsOpen(false);
-    }
+    },
+    handleSearch: () => setIsOpen(false) // only need to close listbox since input blur handles change event
   };
 };
 
