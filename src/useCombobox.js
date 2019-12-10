@@ -210,12 +210,11 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
       setIsOpen(true);
       inputRef.current.focus();
     },
-    handleReset: () => {
+    handleClear: () => {
       setTerm("");
       onChange("");
       setIsOpen(false);
-    },
-    handleSearch: () => setIsOpen(false) // only need to close listbox since input blur handles change event
+    }
   };
 };
 
