@@ -70,4 +70,4 @@ const Example = () => {
   );
 };
 
-storiesOf("useCombobox", module).add("default", () => <Example />);
+storiesOf("useCombobox", module).add("Default", () => <Example />);
