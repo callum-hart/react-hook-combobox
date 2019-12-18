@@ -140,15 +140,9 @@ describe("handleClear", () => {
 describe("primitives.input.onKeyDown", () => {
   const listboxRefChildrenMock = [
     { scrollIntoView: jest.fn() },
+    { scrollIntoView: jest.fn() },
     { scrollIntoView: jest.fn() }
   ];
-  const setupTest = (result, eventMock) => {
-    listboxRefChildrenMock.forEach((mock, index) =>
-      result.current.primitives.listboxOption(index)
-    );
-    result.current.primitives.input.onKeyDown(eventMock);
-  };
-
   jest.spyOn(React, "useRef").mockReturnValue({
     current: {
       children: listboxRefChildrenMock
@@ -157,83 +151,119 @@ describe("primitives.input.onKeyDown", () => {
 
   describe("when called", () => {
     describe("and key is ArrowDown", () => {
-      const { result } = renderHook(() => useCombobox({ name: givenName }));
       const eventMock = { key: "ArrowDown" };
-      const expectedActiveIndex = 0;
 
-      act(() => setupTest(result, eventMock));
+      describe("on first keydown", () => {
+        const { result } = renderHook(() => useCombobox({ name: givenName }));
 
-      it("should set isOpen to true", () => {
-        expect(result.current.isOpen).toBe(true);
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        it("should set activeIndex to 0", () => {
+          expect(result.current.activeIndex).toStrictEqual(0);
+        });
       });
 
-      it("should set expected activeIndex", () => {
-        expect(result.current.activeIndex).toStrictEqual(expectedActiveIndex);
+      describe("on second keydown", () => {
+        const { result } = renderHook(() => useCombobox({ name: givenName }));
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        it("should set activeIndex to 1", () => {
+          expect(result.current.activeIndex).toStrictEqual(1);
+        });
       });
 
-      it("should call scrollIntoView", () => {
-        expect(
-          listboxRefChildrenMock[expectedActiveIndex].scrollIntoView
-        ).toHaveBeenCalledWith();
+      describe("on third keydown", () => {
+        const { result } = renderHook(() => useCombobox({ name: givenName }));
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        it("should set activeIndex to 2", () => {
+          expect(result.current.activeIndex).toStrictEqual(2);
+        });
       });
-    });
 
-    describe("and key is ArrowUp", () => {
-      const { result } = renderHook(() => useCombobox({ name: givenName }));
-      const eventMock = { key: "ArrowUp" };
-      const expectedActiveIndex = 1;
+      describe("on forth keydown (bottom option)", () => {
+        const { result } = renderHook(() => useCombobox({ name: givenName }));
 
-      act(() => setupTest(result, eventMock));
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
 
-      it("should set isOpen to true", () => {
-        expect(result.current.isOpen).toBe(true);
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        act(() => {
+          result.current.primitives.listboxOption(0);
+          result.current.primitives.listboxOption(1);
+          result.current.primitives.listboxOption(2);
+
+          result.current.primitives.input.onKeyDown(eventMock);
+        });
+
+        it("should set activeIndex to 0 (back to top)", () => {
+          expect(result.current.activeIndex).toStrictEqual(0);
+        });
       });
-
-      it("should set expected activeIndex", () => {
-        expect(result.current.activeIndex).toStrictEqual(expectedActiveIndex);
-      });
-
-      it("should call scrollIntoView", () => {
-        expect(
-          listboxRefChildrenMock[expectedActiveIndex].scrollIntoView
-        ).toHaveBeenCalledWith();
-      });
-    });
-  });
-
-  describe("and key is PageDown", () => {
-    const { result } = renderHook(() => useCombobox({ name: givenName }));
-    const eventMock = { key: "PageDown" };
-    const expectedActiveIndex = 1;
-
-    act(() => setupTest(result, eventMock));
-
-    it("should set expected activeIndex", () => {
-      expect(result.current.activeIndex).toStrictEqual(expectedActiveIndex);
-    });
-
-    it("should call scrollIntoView", () => {
-      expect(
-        listboxRefChildrenMock[expectedActiveIndex].scrollIntoView
-      ).toHaveBeenCalledWith();
-    });
-  });
-
-  describe("and key is PageUp", () => {
-    const { result } = renderHook(() => useCombobox({ name: givenName }));
-    const eventMock = { key: "PageUp" };
-    const expectedActiveIndex = 0;
-
-    act(() => setupTest(result, eventMock));
-
-    it("should set expected activeIndex", () => {
-      expect(result.current.activeIndex).toStrictEqual(expectedActiveIndex);
-    });
-
-    it("should call scrollIntoView", () => {
-      expect(
-        listboxRefChildrenMock[expectedActiveIndex].scrollIntoView
-      ).toHaveBeenCalledWith();
     });
   });
 });
