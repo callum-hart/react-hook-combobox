@@ -200,9 +200,7 @@ describe("primitives.input.onChange", () => {
           value: givenTerm
         }
       };
-      const { result } = renderHook(() =>
-        useCombobox({ name: givenName })
-      );
+      const { result } = renderHook(() => useCombobox({ name: givenName }));
 
       act(() => result.current.primitives.input.onChange(eventMock));
 
@@ -218,9 +216,7 @@ describe("primitives.input.onChange", () => {
           value: givenTerm
         }
       };
-      const { result } = renderHook(() =>
-        useCombobox({ name: givenName })
-      );
+      const { result } = renderHook(() => useCombobox({ name: givenName }));
 
       act(() => result.current.primitives.input.onChange(eventMock));
 
@@ -518,12 +514,138 @@ describe("primitives.input.onKeyDown", () => {
       });
     });
 
-    // Only needed for full coverage
+    // Only needed for full coverage... can we test that nothing changed?
     describe("and key is null", () => {
       const eventMock = { key: null };
       const { result } = renderHook(() => useCombobox({ name: givenName }));
 
       act(() => triggerKeyDown(result, eventMock));
+    });
+  });
+});
+
+describe("primatives.listbox.onMouseOut", () => {
+  const listboxRefChildrenMock = [{ scrollIntoView: jest.fn() }];
+
+  jest.spyOn(React, "useRef").mockReturnValue({
+    current: {
+      children: listboxRefChildrenMock
+    }
+  });
+
+  describe("when called", () => {
+    const { result } = renderHook(() => useCombobox({ name: givenName }));
+
+    act(() => {
+      result.current.primitives.listboxOption(0);
+      result.current.primitives.input.onKeyDown({ key: "ArrowDown" });
+    });
+
+    act(() => result.current.primitives.listbox.onMouseOut());
+
+    it("should reset activeIndex", () => {
+      expect(result.current.activeIndex).toStrictEqual(-1);
+    });
+  });
+});
+
+describe("primatives.listboxOption.onClick", () => {
+  const listboxRefChildrenMock = [
+    { scrollIntoView: jest.fn() },
+    { scrollIntoView: jest.fn() }
+  ];
+
+  jest.spyOn(React, "useRef").mockReturnValue({
+    current: {
+      children: listboxRefChildrenMock
+    }
+  });
+
+  describe("when called", () => {
+    const givenOptions = ["First option", "Second option"];
+    const onChangeMock = jest.fn();
+
+    afterEach(() => onChangeMock.mockReset());
+
+    describe("and optionToString returns a string", () => {
+      const { result } = renderHook(() =>
+        useCombobox({
+          name: givenName,
+          optionToString: index => givenOptions[index],
+          onChange: onChangeMock
+        })
+      );
+      const givenActiveIndex = 1;
+
+      act(() => {
+        result.current.primitives.listboxOption(0);
+        result.current.primitives.listboxOption(1);
+      });
+
+      act(() =>
+        result.current.primitives.listboxOption(givenActiveIndex).onClick()
+      );
+
+      it("should call onChange with the active option", () => {
+        expect(onChangeMock).toHaveBeenCalledWith(
+          givenOptions[givenActiveIndex],
+          givenActiveIndex
+        );
+      });
+    });
+
+    describe("and optionToString does NOT return a string", () => {
+      const { result } = renderHook(() =>
+        useCombobox({
+          name: givenName,
+          onChange: onChangeMock
+        })
+      );
+      const givenActiveIndex = 1;
+
+      act(() => {
+        result.current.primitives.listboxOption(0);
+        result.current.primitives.listboxOption(1);
+      });
+
+      act(() =>
+        result.current.primitives.listboxOption(givenActiveIndex).onClick()
+      );
+
+      it("should NOT call onChange", () => {
+        expect(onChangeMock).not.toHaveBeenCalled();
+      });
+    });
+  });
+});
+
+describe("primatives.listboxOption.onMouseOver", () => {
+  const listboxRefChildrenMock = [
+    { scrollIntoView: jest.fn() },
+    { scrollIntoView: jest.fn() }
+  ];
+
+  jest.spyOn(React, "useRef").mockReturnValue({
+    current: {
+      children: listboxRefChildrenMock
+    }
+  });
+
+  describe("when called", () => {
+    const { result } = renderHook(() => useCombobox({ name: givenName }));
+    const expectedActiveIndex = 1;
+
+    act(() => {
+      result.current.primitives.listboxOption(0);
+      result.current.primitives.listboxOption(1);
+    });
+
+    act(() =>
+      result.current.primitives.listboxOption(expectedActiveIndex).onMouseOver()
+    );
+
+    it("should set activeIndex to 1", () => {
+      expect(result.current.activeIndex).toStrictEqual(expectedActiveIndex);
     });
   });
 });
