@@ -137,6 +137,100 @@ describe("handleClear", () => {
   });
 });
 
+describe("primitives.input.onBlur", () => {
+  const listboxRefChildrenMock = [{ scrollIntoView: jest.fn() }];
+
+  jest.spyOn(React, "useRef").mockReturnValue({
+    current: {
+      children: listboxRefChildrenMock
+    }
+  });
+
+  describe("when called", () => {
+    describe("and there is an active option", () => {
+      const onChangeMock = jest.fn();
+      const { result } = renderHook(() =>
+        useCombobox({ name: givenName, onChange: onChangeMock })
+      );
+
+      act(() => {
+        result.current.primitives.listboxOption(0);
+        result.current.primitives.input.onKeyDown({ key: "ArrowDown" });
+      });
+
+      act(() => result.current.primitives.input.onBlur());
+
+      it("should NOT call onChange", () => {
+        expect(onChangeMock).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("and there is NOT an active option", () => {
+      const givenTerm = "given-term";
+      const eventMock = {
+        target: {
+          value: givenTerm
+        }
+      };
+      const onChangeMock = jest.fn();
+      const { result } = renderHook(() =>
+        useCombobox({ name: givenName, onChange: onChangeMock })
+      );
+
+      act(() => {
+        result.current.primitives.listboxOption(0);
+        result.current.primitives.input.onChange(eventMock);
+      });
+
+      act(() => result.current.primitives.input.onBlur());
+
+      it("should call onChange with the term", () => {
+        expect(onChangeMock).toHaveBeenCalledWith(givenTerm);
+      });
+    });
+  });
+});
+
+describe("primitives.input.onChange", () => {
+  describe("when called", () => {
+    describe("and term is present", () => {
+      const givenTerm = "given-term";
+      const eventMock = {
+        target: {
+          value: givenTerm
+        }
+      };
+      const { result } = renderHook(() =>
+        useCombobox({ name: givenName })
+      );
+
+      act(() => result.current.primitives.input.onChange(eventMock));
+
+      it("should set isOpen to true", () => {
+        expect(result.current.isOpen).toBe(true);
+      });
+    });
+
+    describe("and term is NOT present", () => {
+      const givenTerm = "";
+      const eventMock = {
+        target: {
+          value: givenTerm
+        }
+      };
+      const { result } = renderHook(() =>
+        useCombobox({ name: givenName })
+      );
+
+      act(() => result.current.primitives.input.onChange(eventMock));
+
+      it("should set isOpen to false", () => {
+        expect(result.current.isOpen).toBe(false);
+      });
+    });
+  });
+});
+
 describe("primitives.input.onKeyDown", () => {
   const listboxRefChildrenMock = [
     { scrollIntoView: jest.fn() },
