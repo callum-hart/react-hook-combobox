@@ -1,9 +1,9 @@
 # React Hook Combobox
 *Turn any text field and list into a WAI-ARIA compliant combobox*
 
-> A combobox is a widget made up of the combination of two distinct elements: 1) a single-line textbox, and 2) an associated pop-up element for helping users set the value of the textbox. – w3.org
+> A combobox is a widget made up of the combination of two distinct elements: 1) a single-line textbox, and 2) an associated pop-up element for helping users set the value of the textbox. – [w3.org](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox)
 
-React Hook Combobox is built to the [WAI-ARIA specification](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox) for comboboxes. It follows a bring-your-own principle, which gives consumers full ownership of:
+React Hook Combobox is built to the WAI-ARIA specification for comboboxes. It follows a bring-your-own principle, which gives consumers full ownership of:
 
 - markup: render any UI you want
 - data: use any data structure you want
@@ -61,23 +61,7 @@ const Example = () => {
 
 ## API
 
-```js
-const {
-  primitives, // object holding combobox primatives ({ container, label, input, listbox, listboxOption })
-  term, // value of the input primative
-  activeIndex, // index of the active option
-  isOpen, // reflects whether the listbox primative should be visible or not
-  handleOpen, // function to progromatically set isOpen to true
-  handleClear // function to clear the term
-} = useCombobox({
-  name, // a unique (to the page) identifier
-  optionToString, // function to return display value of selected option
-  onChange, // function called when the selected option changes
-  initialValue // optional initial value for combobox
-});
-```
-
-`useCombobox` accepts one parameter containing the fields:
+The `useCombobox` hook accepts a single argument containing the fields:
 
 ```js
 {
@@ -96,7 +80,7 @@ A unique to the page identifier.
 ### optionToString
 `function, required`
 
-Function that returns the display value of the selected listbox option.
+Function that returns the display name of the selected listbox option.
 
 ### onChange
 `function, reccommended`
@@ -106,11 +90,9 @@ Function called when the selected listbox option changes.
 ### initialValue
 `string, optional`
 
-Initial value of the input primative.
+Initial value of the input primitive.
 
----
-
-`useCombobox` returns an object containing the fields:
+The `useCombobox` hook returns an object containing the fields:
 
 ```js
 {
@@ -122,6 +104,42 @@ Initial value of the input primative.
   handleClear
 }
 ```
+
+### primitives
+`object, { container, label, input, listbox, listboxOption }`
+
+Object containing primitives used to build a combobox:
+
+- **`container,`** `object` Top level primitive that contains or owns the other primitives.
+- **`label,`** `object` Primitive used to label the combobox.
+- **`input,`** `object` Primitive that serves as the textbox.
+- **`listbox,`** `object` Menu primitive allowing users to choose an option.
+- **`listboxOption,`** `function(index)` Primitive for a single option rendered in the menu.
+
+### term
+`string, defaults to an emptry string or the value passed to initialValue`
+
+Value of the input primitive.
+
+### activeIndex
+`number, defaults to -1`
+
+Index of the active listbox option.
+
+### isOpen
+`boolean, defaults to false`
+
+Reflects whether the listbox menu primitive should be visible or not.
+
+### handleOpen
+`function`
+
+Function to progromatically set `isOpen` to true.
+
+### handleClear
+`function`
+
+Function to clear the textbox term.
 
 ## Homage
 
