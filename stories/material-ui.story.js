@@ -21,13 +21,13 @@ const givenOptions = [
 ];
 
 const Example = () => {
-  const { primitives, term, activeIndex, isOpen } = useCombobox({
+  const { primitives, value, activeIndex, isOpen } = useCombobox({
     name: "fruit",
     optionToString: index => filteredOptions[index].value,
     onChange: (value, index) => console.log(value, filteredOptions[index])
   });
   const filteredOptions = givenOptions.filter(option =>
-    option.value.startsWith(term)
+    option.value.startsWith(value)
   );
 
   return (

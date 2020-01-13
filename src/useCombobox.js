@@ -10,7 +10,7 @@ const KEY_TAB = "Tab";
 const KEY_ESCAPE = "Escape";
 
 const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
-  const [term, setTerm] = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
   const [activeIndex, setActiveIndex] = useState(DEFAULT_ACTIVE_INDEX);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,13 +23,13 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
   const inputId = `${name}-input`;
   const listboxId = `${name}-listbox`;
 
-  const termHasFocus =
+  const valueHasFocus =
     inputRef.current && inputRef.current === document.activeElement;
 
   let optionsCount = 0;
 
   useEffect(() => {
-    if (termHasFocus) {
+    if (valueHasFocus) {
       document.addEventListener("click", handleDocumentClick);
 
       return () => document.removeEventListener("click", handleDocumentClick);
@@ -50,14 +50,6 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
     handleNewActiveIndex(newActiveIndex);
   };
 
-  const handlePageDown = () => {
-    handleNewActiveIndex(optionsCount - 1);
-  };
-
-  const handlePageUp = () => {
-    handleNewActiveIndex(0);
-  };
-
   const handleNewActiveIndex = newActiveIndex => {
     if (
       listboxRef.current &&
@@ -69,15 +61,13 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
     }
   };
 
-  const handleEnter = () => selectOption(activeIndex);
-
   const handleTab = () => {
     setActiveIndex(DEFAULT_ACTIVE_INDEX);
     setIsOpen(false);
   };
 
   const handleEscape = () => {
-    setTerm("");
+    setValue("");
     setActiveIndex(DEFAULT_ACTIVE_INDEX);
     setIsOpen(false);
   };
@@ -86,7 +76,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
     if (!isOpen) {
       setIsOpen(true);
     }
-  }
+  };
 
   const handleKeydown = ({ key }) => {
     switch (key) {
@@ -97,11 +87,11 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         openIfClosed();
         return handleArrowUp();
       case KEY_PAGE_DOWN:
-        return handlePageDown();
+        return handleNewActiveIndex(optionsCount - 1);
       case KEY_PAGE_UP:
-        return handlePageUp();
+        return handleNewActiveIndex(0);
       case KEY_ENTER:
-        return handleEnter();
+        return selectOption(activeIndex);
       case KEY_TAB:
         return handleTab();
       case KEY_ESCAPE:
@@ -123,7 +113,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
       const displayName = optionToString(index);
 
       if (displayName) {
-        setTerm(displayName);
+        setValue(displayName);
         onChange(displayName, index);
         setIsOpen(false);
       }
@@ -149,7 +139,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
       },
       input: {
         ref: inputRef,
-        value: term,
+        value,
         id: inputId,
         autoComplete: "off",
         "aria-autocomplete": "list", // try 'both' / setSelectionRange
@@ -164,18 +154,16 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         }),
         onBlur: () => {
           /**
-           * If the user does not choose a value from the listbox before
+           * If the user does not choose a option from the listbox before
            * moving focus outside the combobox, the value that the user
            * typed, if any, becomes the value of the combobox.
            */
           if (activeIndex === DEFAULT_ACTIVE_INDEX) {
-            // TODO: pass flag to indicate to consumer that value does not
-            // exist in options... OR call a different function `onAdd`?
-            onChange(term);
+            onChange(value);
           }
         },
         onChange: ({ target: { value } }) => {
-          setTerm(value);
+          setValue(value);
           setActiveIndex(DEFAULT_ACTIVE_INDEX);
 
           value ? setIsOpen(true) : setIsOpen(false);
@@ -186,6 +174,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         ref: listboxRef,
         id: listboxId,
         role: "listbox",
+        // only apply aria-labelledby if consumer has a label
         ...(labelRef.current && {
           "aria-labelledby": labelId
         }),
@@ -203,7 +192,7 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
         };
       }
     },
-    term,
+    value,
     activeIndex,
     isOpen,
     handleOpen: () => {
@@ -211,17 +200,11 @@ const useCombobox = ({ name, initialValue = "", optionToString, onChange }) => {
       inputRef.current.focus();
     },
     handleClear: () => {
-      setTerm("");
+      setValue("");
       onChange("");
       setIsOpen(false);
     }
   };
-};
-
-export const Combobox = ({ children, ...otherProps }) => {
-  const comboboxGoodies = useCombobox({ ...otherProps });
-
-  return children({ ...comboboxGoodies });
 };
 
 export default useCombobox;

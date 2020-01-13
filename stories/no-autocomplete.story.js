@@ -45,4 +45,4 @@ const Example = () => {
   );
 };
 
-storiesOf("useCombobox", module).add("No autocomplete", () => <Example />);
+storiesOf("useCombobox", module).add("No Autocomplete", () => <Example />);

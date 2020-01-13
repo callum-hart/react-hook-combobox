@@ -10,13 +10,13 @@ const givenOptions = [
 ];
 
 const Example = () => {
-  const { primitives, term, activeIndex, isOpen } = useCombobox({
+  const { primitives, value, activeIndex, isOpen } = useCombobox({
     name: "book",
     optionToString: index => filteredOptions[index].title,
     onChange: (value, index) => console.log(value, filteredOptions[index])
   });
   const filteredOptions = givenOptions.filter(option =>
-    option.title.startsWith(term)
+    option.title.startsWith(value)
   );
   const inputValue = filteredOptions[activeIndex]
     ? filteredOptions[activeIndex].title

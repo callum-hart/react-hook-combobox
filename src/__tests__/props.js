@@ -11,8 +11,8 @@ describe("initialValue", () => {
     useCombobox({ name: givenName, initialValue: givenInitialValue })
   );
 
-  it("should should set term to the initialValue", () => {
-    expect(result.current.term).toStrictEqual(givenInitialValue);
+  it("should should set value to the initialValue", () => {
+    expect(result.current.value).toStrictEqual(givenInitialValue);
   });
 });
 
@@ -24,9 +24,7 @@ describe("handleOpen", () => {
   const { result } = renderHook(() => useCombobox({ name: givenName }));
 
   describe("when called", () => {
-    act(() => {
-      result.current.handleOpen();
-    });
+    act(() => result.current.handleOpen());
 
     it("should set isOpen to true", () => {
       expect(result.current.isOpen).toBe(true);
@@ -50,12 +48,10 @@ describe("handleClear", () => {
   );
 
   describe("when called", () => {
-    act(() => {
-      result.current.handleClear();
-    });
+    act(() => result.current.handleClear());
 
-    it("should set term to an empty string", () => {
-      expect(result.current.term).toStrictEqual("");
+    it("should set value to an empty string", () => {
+      expect(result.current.value).toStrictEqual("");
     });
 
     it("should call onChange with an empty string", () => {

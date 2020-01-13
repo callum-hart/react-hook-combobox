@@ -34,10 +34,10 @@ describe("primitives.input.onBlur", () => {
     });
 
     describe("and there is NOT an active option", () => {
-      const givenTerm = "given-term";
+      const givenValue = "given-value";
       const eventMock = {
         target: {
-          value: givenTerm
+          value: givenValue
         }
       };
       const onChangeMock = jest.fn();
@@ -52,8 +52,8 @@ describe("primitives.input.onBlur", () => {
 
       act(() => result.current.primitives.input.onBlur());
 
-      it("should call onChange with the term", () => {
-        expect(onChangeMock).toHaveBeenCalledWith(givenTerm);
+      it("should call onChange with the value", () => {
+        expect(onChangeMock).toHaveBeenCalledWith(givenValue);
       });
     });
   });
@@ -61,11 +61,11 @@ describe("primitives.input.onBlur", () => {
 
 describe("primitives.input.onChange", () => {
   describe("when called", () => {
-    describe("and term is present", () => {
-      const givenTerm = "given-term";
+    describe("and value is present", () => {
+      const givenValue = "given-value";
       const eventMock = {
         target: {
-          value: givenTerm
+          value: givenValue
         }
       };
       const { result } = renderHook(() => useCombobox({ name: givenName }));
@@ -77,11 +77,11 @@ describe("primitives.input.onChange", () => {
       });
     });
 
-    describe("and term is NOT present", () => {
-      const givenTerm = "";
+    describe("and value is NOT present", () => {
+      const givenValue = "";
       const eventMock = {
         target: {
-          value: givenTerm
+          value: givenValue
         }
       };
       const { result } = renderHook(() => useCombobox({ name: givenName }));
@@ -373,21 +373,13 @@ describe("primitives.input.onKeyDown", () => {
 
       act(() => triggerKeyDown(result, eventMock));
 
-      it("should set term to an empty string", () => {
-        expect(result.current.term).toStrictEqual("");
+      it("should set value to an empty string", () => {
+        expect(result.current.value).toStrictEqual("");
       });
 
       it("should set isOpen to false", () => {
         expect(result.current.isOpen).toBe(false);
       });
-    });
-
-    // Only needed for full coverage... can we test that nothing changed?
-    describe("and key is null", () => {
-      const eventMock = { key: null };
-      const { result } = renderHook(() => useCombobox({ name: givenName }));
-
-      act(() => triggerKeyDown(result, eventMock));
     });
   });
 });
