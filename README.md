@@ -9,7 +9,7 @@ React Hook Combobox is built to the WAI-ARIA specification for comboboxes. It fo
 - data: use any data structure you want
 - filter: use any function to filter your data
 
-This approach combines ultimate flexibility with a tiny footprint (3.8kB).
+This approach offers ultimate flexibility with a tiny footprint (3.8kB).
 
 ## Quickstart
 
@@ -28,7 +28,7 @@ import useCombobox from "react-hook-combobox";
 const items = ["London", "Paris", "Rome"];
 
 const Example = () => {
-  const { primitives, term, activeIndex, isOpen } = useCombobox({
+  const { primitives, value, activeIndex, isOpen } = useCombobox({
     name: "city",
     optionToString: index => items[index],
     onChange: value => console.log(value)
@@ -42,7 +42,7 @@ const Example = () => {
       {isOpen && (
         <ul {...primitives.listbox}>
           {items
-            .filter(item => item.startsWith(term))
+            .filter(item => item.startsWith(value))
             .map((item, index) => (
               <li
                 {...primitives.listboxOption(index)}
@@ -78,26 +78,28 @@ The `useCombobox` hook accepts a single argument containing the fields:
 A unique to the page identifier.
 
 ### optionToString
-`function, required`
+`function(index), required`
 
 Function that returns the display name of the selected listbox option.
 
 ### onChange
-`function, reccommended`
+`function(value, index), required`
 
 Function called when the selected listbox option changes.
+
+> The `index` argument is undefined when the input primitive looses focus before a listbox option is selected. The value the user typed becomes the value of the input primitive.
 
 ### initialValue
 `string, optional`
 
-Initial value of the input primitive.
+Initial value of the input primitive..
 
 The `useCombobox` hook returns an object containing the fields:
 
 ```js
 {
   primitives,
-  term,
+  value,
   activeIndex,
   isOpen,
   handleOpen,
@@ -116,8 +118,8 @@ Object containing primitives used to build a combobox:
 - **`listbox,`** `object` Menu primitive allowing users to choose an option.
 - **`listboxOption,`** `function(index)` Primitive for a single option rendered in the menu.
 
-### term
-`string, defaults to an emptry string or the value passed to initialValue`
+### value
+`string, defaults to an empty string or the value passed to initialValue`
 
 Value of the input primitive.
 
@@ -134,12 +136,12 @@ Reflects whether the listbox menu primitive should be visible or not.
 ### handleOpen
 `function`
 
-Function to progromatically set `isOpen` to true.
+Function to programmatically set `isOpen` to true.
 
 ### handleClear
 `function`
 
-Function to clear the textbox term.
+Function to clear the textbox value.
 
 ## Homage
 
