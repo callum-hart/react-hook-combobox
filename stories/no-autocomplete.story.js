@@ -4,30 +4,30 @@ import { storiesOf } from "@storybook/react";
 import useCombobox from "../src/useCombobox";
 
 const givenOptions = [
-  { id: "1", firstName: "Emma" },
-  { id: "2", firstName: "Olivia" },
-  { id: "3", firstName: "Ava" },
-  { id: "4", firstName: "Liam" },
-  { id: "5", firstName: "Noah" },
-  { id: "6", firstName: "William" }
+  { id: 1, location: "Austria" },
+  { id: 2, location: "Australia" },
+  { id: 3, location: "Barbados" },
+  { id: 4, location: "Bermuda" },
+  { id: 5, location: "Canada" },
+  { id: 6, location: "China" }
 ];
 
 const Example = () => {
   const { primitives, activeIndex, isOpen } = useCombobox({
-    name: "recent-contacts",
-    optionToString: index => givenOptions[index].firstName,
+    name: "country",
+    optionToString: index => givenOptions[index].location,
     onChange: (value, index) => console.log(value, givenOptions[index])
   });
 
   return (
     <div {...primitives.container}>
-      <label {...primitives.label}>Contact</label>
+      <label {...primitives.label}>Country</label>
 
-      <input type="text" {...primitives.input} />
+      <input {...primitives.input} type="text" placeholder="e.g. China" />
 
       {isOpen && (
         <>
-          <p>Recently contacted:</p>
+          <p>Recent searches:</p>
           <ul {...primitives.listbox}>
             {givenOptions.map((option, index) => (
               <li
@@ -35,7 +35,7 @@ const Example = () => {
                 key={option.id}
                 style={index === activeIndex ? { background: "#D8E2EB" } : {}}
               >
-                {option.firstName}
+                {option.location}
               </li>
             ))}
           </ul>

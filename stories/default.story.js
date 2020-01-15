@@ -4,36 +4,58 @@ import { storiesOf } from "@storybook/react";
 import useCombobox from "../src/useCombobox";
 
 const givenOptions = [
-  "London",
-  "Paris",
-  "New York",
-  "Tokyo",
-  "Barcelona",
-  "Moscow",
-  "Chicago",
-  "Singapore",
-  "Dubai",
-  "San Francisco",
-  "Madrid",
-  "Amsterdam",
-  "Los Angeles",
-  "Rome",
-  "Boston",
-  "San Jose",
-  "Toronto",
-  "Washington DC",
-  "Zurich",
+  "Austria",
+  "Australia",
+  "Barbados",
+  "Bermuda",
+  "Canada",
+  "China",
+  "Denmark",
+  "Dominica",
+  "Estonia",
+  "Egypt",
+  "Finland",
+  "Fiji",
+  "Greece",
+  "Guatemala",
   "Hong Kong",
-  "Beijing",
-  "Berlin",
-  "Sydney",
-  "Las Vegas",
-  "Frankfurt"
+  "Hungary",
+  "Ireland",
+  "India",
+  "Jamaica",
+  "Japan",
+  "Kenya",
+  "Kazakhstan",
+  "Lebanon",
+  "Luxembourg",
+  "Morocco",
+  "Mongolia",
+  "Nepal",
+  "New Zealand",
+  "Oman",
+  "Poland",
+  "Portugal",
+  "Qatar",
+  "Russia",
+  "Romania",
+  "Syria",
+  "Sweden",
+  "Thailand",
+  "Turkey",
+  "United Kingdom",
+  "United States",
+  "Vietnam",
+  "Vanuatu",
+  "Wallis & Futuna",
+  "Western Sahara",
+  "Yemen",
+  "Zambia",
+  "Zimbabwe"
 ];
 
 const Example = () => {
   const { primitives, value, activeIndex, isOpen } = useCombobox({
-    name: "city",
+    name: "country",
     optionToString: index => filteredOptions[index],
     onChange: (value, index) => console.log(value, filteredOptions[index])
   });
@@ -43,9 +65,13 @@ const Example = () => {
 
   return (
     <div {...primitives.container}>
-      <label {...primitives.label}>City</label>
+      <label {...primitives.label}>Country</label>
 
-      <input type="text" {...primitives.input} />
+      <input
+        {...primitives.input}
+        type="text"
+        placeholder="e.g. United Kingdom"
+      />
 
       {isOpen &&
         (filteredOptions.length ? (

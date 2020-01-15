@@ -92,7 +92,7 @@ Function called when the selected listbox option changes.
 ### initialValue
 `string, optional`
 
-Initial value of the input primitive..
+Initial value of the input primitive.
 
 The `useCombobox` hook returns an object containing the fields:
 

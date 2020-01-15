@@ -80,7 +80,7 @@ const Example = () => {
       <label {...primitives.label}>Country</label>
 
       <div>
-        <input type="text" {...primitives.input} placeholder="e.g. London" />
+        <input type="text" {...primitives.input} placeholder="e.g. Japan" />
 
         {value && (
           <button type="button" onClick={handleClear}>
