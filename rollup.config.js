@@ -1,26 +1,19 @@
-import babel from "rollup-plugin-babel";
-import commonjs from "rollup-plugin-commonjs";
-import resolve from "rollup-plugin-node-resolve";
-import replace from "rollup-plugin-replace";
-
-const NODE_ENV = process.env.NODE_ENV || "development";
-const outputFile = NODE_ENV === "production" ? "./lib/prod.js" : "./lib/dev.js";
+import babel from 'rollup-plugin-babel';
 
 export default {
-  input: "./src/useCombobox.js",
-  output: {
-    file: outputFile,
-    format: "cjs"
-  },
-  plugins: [
-    replace({
-      "process.env.NODE_ENV": JSON.stringify(NODE_ENV)
-    }),
-    babel({
-      exclude: "node_modules/**"
-    }),
-    resolve(),
-    commonjs()
+  input: "src/useCombobox.js",
+  external: ["react"],
+  output: [
+    {
+      file: "dist/react-hook-combobox.cjs.js",
+      format: "cjs",
+    },
+    {
+      file: "dist/react-hook-combobox.esm.js",
+      format: "esm",
+    }
   ],
-  external: id => /^react/.test(id)
+  plugins: [babel({
+		comments: false
+	})]
 };

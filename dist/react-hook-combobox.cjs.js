@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var react = require('react');
 
 function _defineProperty(obj, key, value) {
@@ -47,42 +45,6 @@ function _objectSpread2(target) {
       ownKeys(Object(source)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
-    }
-  }
-
-  return target;
-}
-
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
-}
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-
-  var target = _objectWithoutPropertiesLoose(source, excluded);
-
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
     }
   }
 
@@ -149,8 +111,8 @@ var useCombobox = function useCombobox(_ref) {
 
   var _useState = react.useState(initialValue),
       _useState2 = _slicedToArray(_useState, 2),
-      term = _useState2[0],
-      setTerm = _useState2[1];
+      value = _useState2[0],
+      setValue = _useState2[1];
 
   var _useState3 = react.useState(DEFAULT_ACTIVE_INDEX),
       _useState4 = _slicedToArray(_useState3, 2),
@@ -169,18 +131,10 @@ var useCombobox = function useCombobox(_ref) {
   var labelId = "".concat(name, "-label");
   var inputId = "".concat(name, "-input");
   var listboxId = "".concat(name, "-listbox");
-  var termHasFocus = inputRef.current && inputRef.current === document.activeElement;
+  var valueHasFocus = inputRef.current && inputRef.current === document.activeElement;
   var optionsCount = 0;
   react.useEffect(function () {
-    if (termHasFocus) {
-      document.addEventListener("keydown", handleDocumentKeydown);
-      return function () {
-        return document.removeEventListener("keydown", handleDocumentKeydown);
-      };
-    }
-  });
-  react.useEffect(function () {
-    if (termHasFocus) {
+    if (valueHasFocus) {
       document.addEventListener("click", handleDocumentClick);
       return function () {
         return document.removeEventListener("click", handleDocumentClick);
@@ -198,14 +152,6 @@ var useCombobox = function useCombobox(_ref) {
     handleNewActiveIndex(newActiveIndex);
   };
 
-  var handlePageDown = function handlePageDown() {
-    handleNewActiveIndex(optionsCount - 1);
-  };
-
-  var handlePageUp = function handlePageUp() {
-    handleNewActiveIndex(0);
-  };
-
   var handleNewActiveIndex = function handleNewActiveIndex(newActiveIndex) {
     if (listboxRef.current && listboxRef.current.children && listboxRef.current.children[newActiveIndex]) {
       listboxRef.current.children[newActiveIndex].scrollIntoView();
@@ -213,45 +159,43 @@ var useCombobox = function useCombobox(_ref) {
     }
   };
 
-  var handleEnter = function handleEnter() {
-    return selectOption(activeIndex);
-  };
-
   var handleTab = function handleTab() {
-    inputRef.current.blur();
     setActiveIndex(DEFAULT_ACTIVE_INDEX);
     setIsOpen(false);
   };
 
   var handleEscape = function handleEscape() {
-    setTerm("");
+    setValue("");
     setActiveIndex(DEFAULT_ACTIVE_INDEX);
     setIsOpen(false);
   };
 
-  var handleDocumentKeydown = function handleDocumentKeydown(_ref2) {
-    var key = _ref2.key;
-
-    if (!isOpen && (key === KEY_ARROW_DOWN || key === KEY_ARROW_UP)) {
-      // user pressed esc and maintained focus
+  var openIfClosed = function openIfClosed() {
+    if (!isOpen) {
       setIsOpen(true);
     }
+  };
+
+  var handleKeydown = function handleKeydown(_ref2) {
+    var key = _ref2.key;
 
     switch (key) {
       case KEY_ARROW_DOWN:
+        openIfClosed();
         return handleArrowDown();
 
       case KEY_ARROW_UP:
+        openIfClosed();
         return handleArrowUp();
 
       case KEY_PAGE_DOWN:
-        return handlePageDown();
+        return handleNewActiveIndex(optionsCount - 1);
 
       case KEY_PAGE_UP:
-        return handlePageUp();
+        return handleNewActiveIndex(0);
 
       case KEY_ENTER:
-        return handleEnter();
+        return selectOption(activeIndex);
 
       case KEY_TAB:
         return handleTab();
@@ -268,21 +212,23 @@ var useCombobox = function useCombobox(_ref) {
     var target = _ref3.target;
 
     if (isOpen && !containerRef.current.contains(target)) {
-      inputRef.current.blur();
       setActiveIndex(DEFAULT_ACTIVE_INDEX);
       setIsOpen(false);
     }
   };
 
   var selectOption = function selectOption(index) {
-    var displayName = optionToString(index);
+    try {
+      var displayName = optionToString(index);
 
-    if (displayName) {
-      setTerm(displayName);
-      onChange(displayName, index);
-      setIsOpen(false);
-    } // else user pressed enter without a term present
-
+      if (displayName) {
+        setValue(displayName);
+        onChange(displayName, index);
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.log("Could not find option at index: ".concat(index));
+    }
   };
 
   return {
@@ -301,25 +247,29 @@ var useCombobox = function useCombobox(_ref) {
       },
       input: _objectSpread2({
         ref: inputRef,
-        value: term,
+        value: value,
         id: inputId,
         autoComplete: "off",
         "aria-autocomplete": "list",
-        // try 'both' / setSelectionRange
         "aria-controls": listboxId
       }, isOpen && activeIndex > DEFAULT_ACTIVE_INDEX && {
         "aria-activedescendant": "".concat(name, "-option-").concat(activeIndex)
       }, {}, labelRef.current && {
         "aria-labelledby": labelId
       }, {
-        onFocus: function onFocus() {
-          return setIsOpen(true);
+        onBlur: function onBlur() {
+          if (activeIndex === DEFAULT_ACTIVE_INDEX) {
+            onChange(value);
+          }
         },
         onChange: function onChange(_ref4) {
           var value = _ref4.target.value;
-          setTerm(value);
+          setValue(value);
           setActiveIndex(DEFAULT_ACTIVE_INDEX);
-          setIsOpen(true);
+          value ? setIsOpen(true) : setIsOpen(false);
+        },
+        onKeyDown: function onKeyDown(event) {
+          return handleKeydown(event);
         }
       }),
       listbox: _objectSpread2({
@@ -328,6 +278,10 @@ var useCombobox = function useCombobox(_ref) {
         role: "listbox"
       }, labelRef.current && {
         "aria-labelledby": labelId
+      }, {
+        onMouseOut: function onMouseOut() {
+          return setActiveIndex(DEFAULT_ACTIVE_INDEX);
+        }
       }),
       listboxOption: function listboxOption(index) {
         optionsCount++;
@@ -337,34 +291,26 @@ var useCombobox = function useCombobox(_ref) {
           "aria-selected": index === activeIndex,
           onClick: function onClick() {
             return selectOption(index);
+          },
+          onMouseOver: function onMouseOver() {
+            return setActiveIndex(index);
           }
         };
       }
     },
-    term: term,
+    value: value,
     activeIndex: activeIndex,
     isOpen: isOpen,
-    handleReset: function handleReset() {
-      setTerm("");
-      setActiveIndex(DEFAULT_ACTIVE_INDEX);
-      onChange("");
+    handleOpen: function handleOpen() {
+      setIsOpen(true);
+      inputRef.current.focus();
     },
-    handleSearch: function handleSearch() {
-      setTerm(term);
-      setActiveIndex(DEFAULT_ACTIVE_INDEX);
-      onChange(term);
+    handleClear: function handleClear() {
+      setValue("");
+      onChange("");
       setIsOpen(false);
     }
   };
 };
 
-var Combobox = function Combobox(_ref5) {
-  var children = _ref5.children,
-      otherProps = _objectWithoutProperties(_ref5, ["children"]);
-
-  var comboboxGoodies = useCombobox(_objectSpread2({}, otherProps));
-  return children(_objectSpread2({}, comboboxGoodies));
-};
-
-exports.Combobox = Combobox;
-exports.default = useCombobox;
+module.exports = useCombobox;
