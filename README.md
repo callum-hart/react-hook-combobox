@@ -9,7 +9,7 @@ React Hook Combobox is built to the WAI-ARIA specification for comboboxes. It fo
 - data: use any data structure you want
 - filter: use any function to filter your data
 
-This approach offers ultimate flexibility with a tiny footprint ({TODO}kB).
+This approach offers ultimate flexibility with a tiny footprint (3.4kB).
 
 ## Quickstart
 
@@ -61,7 +61,7 @@ const Example = () => {
 
 ## API
 
-The `useCombobox` hook accepts a single argument containing the fields:
+The `useCombobox` hook **accepts** a single argument containing the fields:
 
 ```js
 {
@@ -94,7 +94,9 @@ Function called when the selected listbox option changes.
 
 Initial value of the input primitive.
 
-The `useCombobox` hook returns an object containing the fields:
+---
+
+The `useCombobox` hook **returns** an object containing the fields:
 
 ```js
 {
@@ -152,4 +154,4 @@ Three-quarters of the way into the implementation a friend showed me [Downshift]
 Whilst Downshift offers way more features I still think React Hook Search is useful to those wanting:
 
 - a simpler API (less can sometimes be more)
-- a smaller bundle size ({TODO}kB vs [40.8kB](https://bundlephobia.com/result?p=downshift@4.1.0))
+- a smaller bundle size ([3.4kB](https://bundlephobia.com/result?p=react-hook-combobox@0.1.0) vs [40.8kB](https://bundlephobia.com/result?p=downshift@4.1.0))
