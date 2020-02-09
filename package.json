@@ -1,6 +1,6 @@
 {
   "name": "react-hook-combobox",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Turn any text field and list into a WAI-ARIA compliant combobox",
   "main": "dist/react-hook-combobox.cjs.js",
   "module": "dist/react-hook-combobox.esm.js",
